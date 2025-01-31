@@ -72,9 +72,6 @@ void set_foreach(Set *set, void (*function)(void *)) {
  * output:  nothing (as a side effect the set is freed)
  */
 void set_free(Set *s) {
-    if (s == NULL) {
-        return;
-    }
     while (s->head != NULL) {
         // initialize pointer to the start of the list
         Node *node = s->head;
@@ -91,9 +88,6 @@ void set_free(Set *s) {
 Set *set_initialize(bool (*compare_function)(void *, void *)) {
     // allocates memory for a new set
     Set *new_set = (Set *)malloc(sizeof(Set));
-    if (new_set == NULL) {
-        return NULL;
-    }
     new_set->head = NULL;
     new_set->equals = compare_function;
     return new_set;
@@ -104,16 +98,12 @@ Set *set_initialize(bool (*compare_function)(void *, void *)) {
  * output:  the updated set 
  */
 Set *set_insert(Set *s, void *e) {
-    if (s == NULL) {
-        return NULL;
-    }
     Node *new_node = (Node *)malloc(sizeof(Node));
     new_node->data = e;
     new_node->next = s->head;
     s->head = new_node;
     return s;
 }
-
 /*
  * Purpose: intersect two sets
  * input:   the sets s1, and s2 
@@ -121,9 +111,6 @@ Set *set_insert(Set *s, void *e) {
  * output:  a new set containing the intersections
  */
 Set *set_intersection(Set *s1, Set *s2) {
-    if (s1 == NULL || s2 == NULL) {
-        return NULL;
-    }
     Set *set = set_initialize(s1->equals);
     Node *node = s1->head;
     while (node != NULL) {
@@ -170,9 +157,6 @@ void set_print(Set *s, void (*print_function)(void *, bool)) {
  * output:   the union of s1 and s2
  */
 Set *set_union(Set *s1, Set *s2) {
-    if (s1 == NULL || s2 == NULL) {
-        return NULL;
-    }
     // initialize a new set with equality comparison 
     tSet set = set_initialize(s1->equals);
     for (Node *node = s1->head; node != NULL; node = node->next) {
