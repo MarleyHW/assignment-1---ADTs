@@ -1,71 +1,70 @@
-/* main.c -- a set of integers */
+/* main.c - maintain a list of integers using the list ADT */
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
-#include "set.h"
+#include "list.h"
+#include "misc.h"
 
-
-
-/* The next three functions are auxiliary functions for a set of integers */
-bool int_compare(void *a, void *b)
+static void int_print(void *x, bool last)
 {
-  return *(int *)a == *(int *)b;
-}
-
-void int_print(void *val, bool unused)
-{
-  int *it = (int *) val;
-  printf("%d ", *it);
-}
-
-/* used to test the collect function */
-bool int_isodd(void *d)
-{
-  return (*(int *)d) & 0x01;
+    int *d = (int*) x;
+    printf("%d%s ", *d, (last ? "" : ","));
 }
 
 
-int main()
+static bool int_compare(void *xa, void *xb)
 {
-  int command;
+    int *a = (int*) xa;
+    int *b = (int*) xb;
+    return (*a == *b);
+}
 
-  tSet set = set_initialize (&int_compare);
-  int *item = (int *) check_malloc(sizeof (int));
 
-  while ((command = getchar()) != EOF)
-  {
-    if (command == 'i' || command == 'm')
-      if (1 != scanf("%d", item))
-        abort1("scanf kinda wanted an int\n");
+int main()
+{
+    int *item, command;
+    tList list = list_initialize ();
+    item = (int*) check_malloc(sizeof (int));
 
-    switch (command)
+    while ((command = getchar()) != EOF)
     {
-      case 'i':  set_insert(set, item);
-                 item = (int *) check_malloc(sizeof (int));
-                 break;
+        if (command == 'b' || command == 'd' || command == 'e' || 
+            command == 'm' || command == 'f' || command == 'r')
+        {
+            if (1 != scanf("%d", item))
+              abort1("scanf kinda wanted an int\n");
+        }
 
-      case 'm':  if (set_member(set, item))
-                    printf("Found\n");
-                 else
-                    printf("Not Found\n");
-                 break;
+        switch (command)
+        {
+            case 'b':    list_insert_beginning(list, item);
+                         item = (int*) check_malloc(sizeof (int));
+                         break;
 
-      case 'c':  {
-                   tSet s2 = set_collect(set, int_isodd);
-                   printf("collected: ");
-                   set_print(s2, &int_print);
-                   printf("from: ");
-                   set_print(set, int_print);
-                   break;
-                 }
+            case 'e':    list_insert_end(list, item);
+                         item = (int*) check_malloc(sizeof (int));
+                         break;
 
-      case 'p':  set_print(set, int_print);
-                 break;
+            case 'i':    printf("%s empty", list_isempty(list) ? "" : "not ");
+                         break;
 
-      case 'q':  set_free(set);
-                 exit(0);
+            case 'm':    // legacy
+            case 'f':    if (list_find(list, item, &int_compare) != NULL)
+                              printf("Found\n");
+                         else
+                              printf("Not Found\n");
+                         break;
+
+            case 'p':    list_foreach(list, int_print);
+                         printf("\n");
+                         break;
+
+            case 'q':    list_free(list);
+                         exit(0);
+
+            case 'r':    list_remove(list, item, &int_compare);
+                         break;
+        }
     }
-  }
-
-  return 0;
+    return 0;
 }
